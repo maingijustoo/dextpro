@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 mb-4">DEXT: Empowering Student Entrepreneurs</h1>
+            <p class="lead mb-4">
+                Streamline your side hustle with our all-in-one management platform. 
+                Track orders, manage inventory, and process payments seamlessly.
+            </p>
+            <div class="d-flex">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg me-3">
+                        Get Started
+                    </a>
+                    <a href="{% url 'account_login' %}" class="btn btn-outline-primary btn-lg">
+                        Login
+                    </a>
+                {% else %}
+                    <a href="{% url 'users:dashboard' %}" class="btn btn-primary btn-lg">
+                        Go to Dashboard
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <img src="{% static 'images/hero-image.png' %}" alt="DEXT Dashboard" class="img-fluid">
+        </div>
+    </div>
+
+    <div class="row mt-5 text-center">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-box-open fa-3x mb-3 text-primary"></i>
+                    <h3 class="card-title">Inventory Management</h3>
+                    <p class="card-text">Easily track and manage your product inventory in real-time.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-shopping-cart fa-3x mb-3 text-primary"></i>
+                    <h3 class="card-title">Order Tracking</h3>
+                    <p class="card-text">Monitor and manage your orders from placement to delivery.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-money-bill-wave fa-3x mb-3 text-primary"></i>
+                    <h3 class="card-title">Payment Processing</h3>
+                    <p class="card-text">Seamless payment integration with multiple payment methods for your convenience.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

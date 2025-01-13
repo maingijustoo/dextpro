@@ -1,0 +1,31 @@
+{% extends 'inventory/base.html' %}
+
+{% block content %}
+<div class="container-custom">
+    <h2 class="mb-4">
+        <i class="fas fa-user-shield"></i> Admin Review Items
+    </h2>
+    
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ item.images.first.image.url }}" class="card-img-top" alt="{{ item.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text">{{ item.description|truncatewords:20 }}</p>
+                    <p class="card-text"><strong>KES {{ item.price }}</strong></p>
+                    <p class="card-text"><strong>Status:</strong> {{ item.get_status_display }}</p>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'inventory:admin_approve_item' item.id %}" class="btn btn-success">Approve</a>
+                        <a href="{% url 'inventory:admin_reject_item' item.id %}" class="btn btn-danger">Reject</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No items pending review.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

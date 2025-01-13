@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>User Profile</h2>
+<p>Email: {{ user.email }}</p>
+<p>Business Name: {{ user.business_name }}</p>
+<p>Business Type: {{ user.business_type }}</p>
+<p>Phone Number: {{ user.phone_number }}</p>
+<a href="{% url 'users:edit_profile' %}">Edit Profile</a>
+<a href="{% url 'users:verify_student' %}">Verify Student Status</a>
+{% endblock %}

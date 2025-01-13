@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Payment History</h2>
+
+<form method="get" class="search-form">
+    {{ search_form.as_p }}
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.order.id }}</td>
+            <td>{{ payment.amount }}</td>
+            <td>{{ payment.get_payment_method_display }}</td>
+            <td>{{ payment.get_status_display }}</td>
+            <td>{{ payment.payment_date }}</td>
+
+            <td>
+                <a href="{% url 'payment_detail' payment.id %}" class="btn btn-info">View Details</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if not payments %}
+<p>No payments found.</p>
+{% endif %}
+{% endblock %}

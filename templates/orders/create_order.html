@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Create Order</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <h3>Select Products</h3>
+    <ul>
+        {% for product in available_products %}
+        <li>
+            <label>{{ product.name }} - ${{ product.price }}</label>
+            <input type="number" name="products[{{ product.id }}]" min="1" max="{{ product.stock_quantity }}" placeholder="Quantity">
+        </li>
+        {% endfor %}
+    </ul>
+    <button type="submit">Place Order</button>
+</form>
+{% endblock %}

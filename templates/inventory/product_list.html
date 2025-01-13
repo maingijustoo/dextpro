@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Your Products</h2>
+<form method="get" action="">
+    {{ search_form.as_p }}
+    <button type="submit">Search</button>
+</form>
+<table>
+    <tr>
+        <th>Product ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Stock Quantity</th>
+        <th>Actions</th>
+    </tr>
+    {% for product in page_obj %}
+    <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.price }}</td>
+        <td>{{ product.stock_quantity }}</td>
+        <td>
+            <a href="{% url 'inventory:product_detail' product.id %}">View</a>
+            <a href="{% url 'inventory:edit_product' product.id %}">Edit</a>
+            <a href="{% url 'inventory:delete_product' product.id %}">Delete</a>
+            <a href="{% url 'inventory:adjust_stock' product.id %}">Adjust Stock</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<style>.floating-add-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+.floating-add-btn:hover {
+    background-color: #357abd;
+    transform: scale(1.1);
+}</style>
+<a href="{% url 'inventory:add_item' %}" class="floating-add-btn">
+    <i class="fas fa-plus fa-2x"></i>
+</a>
+<div>
+    {% for page in page_obj.paginator.page_range %}
+        {% if page_obj.number == page %}
+            <strong>{{ page }}</strong>
+        {% else %}
+            <a href="?page={{ page }}&{{ request.GET.urlencode }}">{{ page }}</a>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

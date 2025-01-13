@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="payment-detail">
+    <h2>Payment Details</h2>
+    
+    <div class="payment-info">
+        <h3>Payment Information</h3>
+        <p>Order ID: {{ payment.order.id }}</p>
+        <p>Amount: {{ payment.amount }}</p>
+        <p>Method: {{ payment.get_payment_method_display }}</p>
+        <p>Status: {{ payment.get_status_display }}</p>
+        <p>Date: {{ payment.payment_date }}</p>
+    </div>
+    
+    {% if payment_details %}
+    <div class="payment-method-details">
+        <h3>Payment Method Details</h3>
+        {% if payment.payment_method == 'mpesa' %}
+            <p>Phone Number: {{ payment_details.mpesa_details.phone_number }}</p>
+            <p>Checkout Request ID: {{ payment_details.mpesa_details.checkout_request_id }}</p>
+        {% elif payment.payment_method == 'stripe' %}
+            <p>Payment Intent: {{ payment_details.stripe_details.payment_intent }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <div class="refunds">
+        <h3>Refunds</h3>
+        {% if refunds %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for refund in refunds %}
+                    <tr>
+                        <td>{{ refund.amount }}</td>
+                        <td>{{ refund.get_status_display }}</td>
+                        <td>{{ refund.refund_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No refunds for this payment.</p>
+        {% endif %}
+    </div>
+    
+    {% if payment.status in 'completed,processing' %}
+    <div class="refund-action">
+        <a href="{% url 'request_refund' payment.id %}" class="btn btn-warning">Request Refund</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

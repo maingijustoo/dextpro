@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Update Order Status for Order #{{ order.id }}</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="status">New Status:</label>
+    <select name="status" id="status">
+        {% for choice in order.STATUS_CHOICES %}
+        <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+        {% endfor %}
+    </select>
+    <label for="notes">Notes:</label>
+    <textarea name="notes" id="notes"></textarea>
+    <button type="submit">Update Status</button>
+</form>
+{% endblock %}

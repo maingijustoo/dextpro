@@ -1,0 +1,104 @@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h3 class="text-center mb-4">Payment Form</h3>
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Order Field -->
+                        <div class="mb-3">
+                            <label for="id_order" class="form-label">Order</label>
+                            {{ form.order }}
+                        </div>
+
+                        <!-- Amount Field -->
+                        <div class="mb-3">
+                            <label for="id_amount" class="form-label">Amount</label>
+                            {{ form.amount }}
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div class="mb-3">
+                            <label for="id_payment_method" class="form-label">Payment Method</label>
+                            {{ form.payment_method }}
+                        </div>
+
+                        <!-- M-Pesa Section -->
+                        <div id="mpesa-section" class="mb-3 d-none">
+                            <label for="id_phone_number" class="form-label">M-Pesa Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <img src="https://via.placeholder.com/20x20?text=M" alt="M-Pesa Icon">
+                                </span>
+                                {{ form.phone_number }}
+                            </div>
+                            <small class="form-text text-muted">
+                                {{ form.phone_number.help_text }}
+                            </small>
+                        </div>
+
+                        <!-- Stripe Section -->
+                        <div id="stripe-section" class="d-none">
+                            <div class="mb-3">
+                                <label for="id_card_number" class="form-label">Card Number</label>
+                                {{ form.card_number }}
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label for="id_expiry_date" class="form-label">Expiry Date</label>
+                                    {{ form.expiry_date }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_cvv" class="form-label">CVV</label>
+                                    {{ form.cvv }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary">Submit Payment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const paymentMethodField = document.getElementById('id_payment_method');
+        const mpesaSection = document.getElementById('mpesa-section');
+        const stripeSection = document.getElementById('stripe-section');
+
+        function toggleSections() {
+            const paymentMethod = paymentMethodField.value;
+
+            // Show/Hide M-Pesa Section
+            if (paymentMethod === 'mpesa') {
+                mpesaSection.classList.remove('d-none');
+                stripeSection.classList.add('d-none');
+            }
+            // Show/Hide Stripe Section
+            else if (paymentMethod === 'stripe') {
+                stripeSection.classList.remove('d-none');
+                mpesaSection.classList.add('d-none');
+            }
+            // Hide both for other payment methods
+            else {
+                mpesaSection.classList.add('d-none');
+                stripeSection.classList.add('d-none');
+            }
+        }
+
+        // Attach event listener to payment method field
+        paymentMethodField.addEventListener('change', toggleSections);
+
+        // Initialize sections on page load
+        toggleSections();
+    });
+</script>
+

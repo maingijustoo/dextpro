@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin User List</h2>
+<table>
+    <tr>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Actions</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.email }}</td>
+        <td>{{ user.get_role_display }}</td>
+        <td>
+            <a href="{% url 'admin_verify_student' user.id %}">Verify Student</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

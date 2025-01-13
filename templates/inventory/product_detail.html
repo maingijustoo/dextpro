@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Product: {{ product.name }}</h2>
+<p>Description: {{ product.description }}</p>
+<p>Price: ${{ product.price }}</p>
+<p>Stock Quantity: {{ product.stock_quantity }}</p>
+<p>Low Stock Threshold: {{ product.low_stock_threshold }}</p>
+<p>Condition: {{ product.condition }}</p>
+<p>Category: {{ product.category }}</p>
+
+<h3>Stock Adjustments</h3>
+<ul>
+    {% for adjustment in stock_adjustments %}
+    <li>{{ adjustment.adjustment_date }}: {{ adjustment.previous_quantity }} -> {{ adjustment.new_quantity }} ({{ adjustment.reason }})</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'inventory:edit_product' product.id %}">Edit Product</a>
+<a href="{% url 'inventory:delete_product' product.id %}">Delete Product</a>
+<a href="{% url 'inventory:adjust_stock' product.id %}">Adjust Stock</a>
+{% endblock %}
