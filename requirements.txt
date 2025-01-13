@@ -5,7 +5,9 @@ dj-database-url==2.3.0
 Django==5.1.4
 django-allauth==65.3.1
 django-crispy-forms==2.3
+gunicorn==23.0.0
 idna==3.10
+packaging==24.2
 pillow==11.1.0
 psycopg2-binary==2.9.10
 requests==2.32.3
