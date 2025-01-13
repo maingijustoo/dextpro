@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os 
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-jpp*%_6yz=yswyvqacir!&=em0m29!gkap1@vivy9s4#z3vfqu'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG","False").lower == "true"
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
 ]
 
 ROOT_URLCONF = 'dextpro.urls'
@@ -87,14 +89,24 @@ WSGI_APPLICATION = 'dextpro.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
+'''DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+}'''
+
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')  # Fallback to SQLite locally
+    )
 }
 
+database_url=os.environ.get("DATABASE_URL")
+
+DATABASES['default']=dj_database_url.parse(database_url)
+#postgresql://dexter_qzen_user:Ks0776i9tyO7KAjUsi1Idb9aBO0YpPX3@dpg-cu2mkf9opnds73f1eavg-a.oregon-postgres.render.com/dexter_qzen
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -183,8 +195,8 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 # Email settings (for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # M-Pesa settings
-MPESA_CONSUMER_KEY = 'your_mpesa_consumer_key'
-MPESA_CONSUMER_SECRET = 'your_mpesa_consumer_secret'
+MPESA_CONSUMER_KEY = 'W8E03I823UItW7bJvcX9HpWiaIJXEAIREKYirOmG8cJXZYvw'
+MPESA_CONSUMER_SECRET = 'WGb4408L8vWrvdAesnrdJaYsJFzMbbYet6GUb1RmAGr519pSYWpuZN4gahKX4Id9'
 MPESA_BASE_URL = 'https://sandbox.safaricom.co.ke'
 MPESA_PASSKEY = 'your_mpesa_passkey'
 MPESA_BUSINESS_SHORTCODE = 'your_mpesa_shortcode'
