@@ -104,6 +104,7 @@ DATABASES = {
 }
 
 database_url=os.environ.get("DATABASE_URL")
+#DATABASE_URL= postgresql://dexter_qzen_user:Ks0776i9tyO7KAjUsi1Idb9aBO0YpPX3@dpg-cu2mkf9opnds73f1eavg-a.oregon-postgres.render.com/dexter_qzen
 
 DATABASES['default']=dj_database_url.parse(database_url)
 #postgresql://dexter_qzen_user:Ks0776i9tyO7KAjUsi1Idb9aBO0YpPX3@dpg-cu2mkf9opnds73f1eavg-a.oregon-postgres.render.com/dexter_qzen
