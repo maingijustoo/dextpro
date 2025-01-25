@@ -25,8 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG","False").lower == "true"
-
+#DEBUG = os.environ.get("DEBUG","False").lower == "true"
+DEBUG=True
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split() 
 
 
@@ -99,11 +99,13 @@ WSGI_APPLICATION = 'dextpro.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')  # Fallback to SQLite locally
+        default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'),  # Fallback to SQLite locally
+        conn_max_age=600,
+        ssl_require=True
     )
 }
 
-database_url=os.environ.get("DATABASE_URL")
+database_url=os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
 #DATABASE_URL= postgresql://dexter_qzen_user:Ks0776i9tyO7KAjUsi1Idb9aBO0YpPX3@dpg-cu2mkf9opnds73f1eavg-a.oregon-postgres.render.com/dexter_qzen
 
 DATABASES['default']=dj_database_url.parse(database_url)
