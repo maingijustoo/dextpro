@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Landing Page
-    path('', TemplateView.as_view(template_name='pages/landing_page.html'), name='landing_page'),
+    path('', TemplateView.as_view(template_name='pages/index.html'), name='landing_page'),
     path('accounts/', include('allauth.urls')),  # Allauth URLs
     path('orders/', include('orders.urls')),
     path('inventory/', include('inventory.urls')),
