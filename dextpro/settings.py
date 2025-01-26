@@ -145,7 +145,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
@@ -199,8 +199,8 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # M-Pesa settings
 
-MPESA_CONSUMER_KEY = os.environ.get("MPESA_CONSUMER_KEY").split
-MPESA_CONSUMER_SECRET = os.environ.get("MPESA_CONSUMER_SECRET").split
+MPESA_CONSUMER_KEY = "W8E03I823UItW7bJvcX9HpWiaIJXEAIREKYirOmG8cJXZYvw"
+MPESA_CONSUMER_SECRET = "WGb4408L8vWrvdAesnrdJaYsJFzMbbYet6GUb1RmAGr519pSYWpuZN4gahKX4Id9"
 
 MPESA_BASE_URL = 'https://sandbox.safaricom.co.ke'
 MPESA_PASSKEY = 'your_mpesa_passkey'
