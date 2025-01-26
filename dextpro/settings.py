@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG","False").lower == "true"
-
+#DEBUG= True
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split() 
 
 
@@ -106,10 +106,10 @@ DATABASES = {
 }
 
 database_url=os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
-#DATABASE_URL= postgresql://dexter_qzen_user:Ks0776i9tyO7KAjUsi1Idb9aBO0YpPX3@dpg-cu2mkf9opnds73f1eavg-a.oregon-postgres.render.com/dexter_qzen
+
 
 DATABASES['default']=dj_database_url.parse(database_url)
-#postgresql://dexter_qzen_user:Ks0776i9tyO7KAjUsi1Idb9aBO0YpPX3@dpg-cu2mkf9opnds73f1eavg-a.oregon-postgres.render.com/dexter_qzen
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -198,8 +198,10 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 # Email settings (for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # M-Pesa settings
-MPESA_CONSUMER_KEY = 'W8E03I823UItW7bJvcX9HpWiaIJXEAIREKYirOmG8cJXZYvw'
-MPESA_CONSUMER_SECRET = 'WGb4408L8vWrvdAesnrdJaYsJFzMbbYet6GUb1RmAGr519pSYWpuZN4gahKX4Id9'
+
+MPESA_CONSUMER_KEY = os.environ.get("MPESA_CONSUMER_KEY").split
+MPESA_CONSUMER_SECRET = os.environ.get("MPESA_CONSUMER_SECRET").split
+
 MPESA_BASE_URL = 'https://sandbox.safaricom.co.ke'
 MPESA_PASSKEY = 'your_mpesa_passkey'
 MPESA_BUSINESS_SHORTCODE = 'your_mpesa_shortcode'
