@@ -4,7 +4,6 @@ __pycache__/
 *.pyo
 db.sqlite3
 .env
-staticfiles/
 media/
 node_modules/
 myenv/
