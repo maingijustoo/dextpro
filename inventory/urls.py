@@ -1,6 +1,7 @@
 from django.urls import path
 from django.urls import path
-from .views import adjust_stock, product_list, product_detail,delete_product,create_product,add_item, item_list, item_detail, edit_item, admin_review_items, admin_approve_item, admin_reject_item
+
+from .views import adjust_stock, product_list, product_detail,delete_product,add_item, item_list, item_detail, edit_item, admin_review_items, admin_approve_item, admin_reject_item
 
 app_name='inventory'
 
@@ -13,7 +14,7 @@ urlpatterns = [
     path('<int:product_id>/', delete_product, name='delete_product'),
     path('<int:product_id>/', adjust_stock, name='adjust_stock'),
     path('add/', add_item, name='add_item'),
-    path('', item_list, name='item_list'),
+    path('items/', item_list, name='item_list'),
     path('<int:item_id>/', item_detail, name='item_detail'),
     #check hiii path pia same to create_produst hazi conflict
     path('<int:item_id>/edit/', edit_item, name='edit_item'),

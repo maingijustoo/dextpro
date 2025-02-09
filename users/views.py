@@ -9,11 +9,26 @@ from django.shortcuts import render
 from inventory.models import Product
 from orders.models import Order
 from payment.models import Payment
+from django.urls import reverse
+from allauth.account.views import LoginView
+from django.contrib.auth import authenticate, login
 
 
 @login_required
 def profile(request):
     return render(request, 'users/profile.html')
+
+@login_required
+def custom_login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')  # Redirect to the dashboard
+    return render(request, 'account/login.html')
+    
 
 
 @login_required

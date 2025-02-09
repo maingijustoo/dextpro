@@ -97,11 +97,25 @@ class Item(models.Model):
         ('active', 'Active'),
         ('rejected', 'Rejected')
     ]
+    CATEGORY_CHOICES=[
+        ('footwear','Foot Wear'),
+        ('sports_wear','sports_wear'),
+        ('jewelery','Jewelery'),
+        ('Fashion','fashion'),
+        ('cologne','Cologne'),
+        ('Toys','toys'),
+        ('health&beauty','Health&Beauty'),
+        ('furniture','Furnitures'),
+        ('spareparts','Spare_parts'),
+        ('electronics','Electronics'),
+        ('phones&tablets','Phones&Tablets'),
+
+    ]
 
     # Basic Details
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='items')
     name = models.CharField(max_length=200)
-    category = models.ForeignKey(ItemCategory, on_delete=models.SET_NULL, null=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='new')
     description = models.TextField(blank=True, null=True)
     
     # Pricing
@@ -115,8 +129,8 @@ class Item(models.Model):
     condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default='new')
     delivery_option = models.CharField(max_length=20, choices=DELIVERY_OPTIONS, default='peddy')
     
-    # Location and Delivery
-    location = models.CharField(max_length=200, blank=True, null=True)
+    # Location and Delivery ,,,,set the location for delivery in future
+    #location = models.CharField(max_length=200, blank=True, null=True)
     
     # Status and Timestamps
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')

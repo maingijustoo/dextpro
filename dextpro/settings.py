@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os 
 import dj_database_url
+from dotenv import load_dotenv
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,12 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
-
+SECRET_KEY = os.getenv("SECRET_KEY","").strip()
+#SECRET_KEY="d9aca7e69c8749f477dd8ce114afb8c7"
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
-#DEBUG= True
+#DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+DEBUG= True
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split() 
+
 
 
 # Application definition
@@ -187,25 +190,41 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-LOGIN_REDIRECT_URL = 'users/dashboard'
+LOGIN_REDIRECT_URL = '/users/dashboard'
 LOGOUT_REDIRECT_URL = '/'
 
 
 # Login and redirect settings
-LOGIN_REDIRECT_URL = 'users/dashboard/'
+LOGIN_REDIRECT_URL = '/users/dashboard/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 # Email settings (for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+#for email stmp
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+#EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER") 
+#EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER   # Sender email
+
+#allauth 
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_REQUIRED = True
 # M-Pesa settings
 
-MPESA_CONSUMER_KEY = "W8E03I823UItW7bJvcX9HpWiaIJXEAIREKYirOmG8cJXZYvw"
-MPESA_CONSUMER_SECRET = "WGb4408L8vWrvdAesnrdJaYsJFzMbbYet6GUb1RmAGr519pSYWpuZN4gahKX4Id9"
+MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY", "").strip()
+MPESA_CONSUMER_SECRET =os.getenv("MPESA_CONSUMER_SECRET","").strip()
 
 MPESA_BASE_URL = 'https://sandbox.safaricom.co.ke'
 MPESA_PASSKEY = 'your_mpesa_passkey'
 MPESA_BUSINESS_SHORTCODE = 'your_mpesa_shortcode'
-SITE_URL = 'http://your-site-url.com'
+SITE_URL = 'http://dextpro.onrender.com'
 
 # Stripe settings
 STRIPE_SECRET_KEY = 'your_stripe_secret_key'

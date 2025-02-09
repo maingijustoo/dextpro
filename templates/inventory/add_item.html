@@ -9,9 +9,9 @@
         <i class="fas fa-box-open"></i> Add New Item
     </h2>
     
-    <form method="post" enctype="multipart/form-data">
+    <form method="POST"  enctype="multipart/form-data">
         {% csrf_token %}
-        
+        <!--{{ form.as_p }}-->
         <div class="row">
             <div class="col-md-8">
                 <div class="card mb-3">
@@ -52,6 +52,10 @@
                                 {{ form.price.label_tag }}
                                 {{ form.price|add_class:'form-control' }}
                             </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.stock_quantity.label_tag }}
+                                {{ form.stock_quantity|add_class:'form-control' }}
+                            </div>
                             <div class="col-md-6 mb-3 d-flex align-items-end">
                                 <div class="form-check">
                                     {{ form.is_price_negotiable }}
@@ -70,10 +74,13 @@
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label">Upload Images (Max 5)</label>
-                            <input type="file" name="images" multiple class="form-control" accept="image/*">
+                            <label class="form-label">
+                                Upload Images (Max 5)
+                                <input type="file" name="images[]" multiple class="form-control" accept="image/*">
+                            </label>
                             <small class="text-muted">Tip: Clear images get more attention!</small>
                         </div>
+                    </div>
                     </div>
                 </div>
                 
@@ -83,12 +90,17 @@
                     </div>
                     <div class="card-body">
                         {{ form.delivery_option|add_class:'form-control mb-3' }}
-                        {{ form.location|add_class:'form-control' }}
+                        <!--remember to set loction -->
+                        <!--{{ form.location|add_class:'form-control' }}-->
                     </div>
                 </div>
             </div>
         </div>
-        
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            {{ form.errors }}
+        </div>
+    {% endif %}       
         <div class="text-end mt-3">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-upload"></i> List Item
@@ -102,11 +114,12 @@
 <script>
 document.querySelector('input[name="images"]').addEventListener('change', function(event) {
     const files = event.target.files;
-    const previewContainer = document.querySelector('.image-preview-container');
+    let previewContainer = document.querySelector('.image-preview-container');
+
     if (!previewContainer) {
-        const container = document.createElement('div');
-        container.classList.add('image-preview-container', 'mt-3');
-        document.querySelector('.card-body').appendChild(container);
+        previewContainer = document.createElement('div');
+        previewContainer.classList.add('image-preview-container', 'mt-3');
+        document.querySelector('.card-body').appendChild(previewContainer);
     } else {
         previewContainer.innerHTML = '';
     }
@@ -132,10 +145,11 @@ document.querySelector('input[name="images"]').addEventListener('change', functi
             img.classList.add('img-thumbnail', 'mb-2');
             img.style.width = '100%';
             previewContainer.appendChild(img);
-        }
+        };
         reader.readAsDataURL(file);
     }
 });
+
 
 </script>
 {% endblock %}

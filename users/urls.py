@@ -5,7 +5,8 @@ from .views import (
     edit_profile, 
     verify_student_status,
     admin_user_list,
-    admin_verify_student
+    admin_verify_student,
+    custom_login_view
 )
 from users import views
 
@@ -13,6 +14,7 @@ app_name='users'
 urlpatterns = [
     # AllAuth URLs
     path('accounts/', include('allauth.urls')),
+    path('accounts/login/', custom_login_view, name='account_login'),
     
     # User profile URLs
     path('profile/', profile, name='profile'),

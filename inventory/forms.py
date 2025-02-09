@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 from .models import Product, ProductCategory
 from django.core.exceptions import ValidationError
 from .models import Item, ItemImage, ItemCategory, ItemTemplate
+from django.forms.widgets import ClearableFileInput
 
 class ProductForm(forms.ModelForm):
     category = forms.ModelChoiceField(
@@ -60,9 +61,14 @@ class MultipleFileInput(forms.ClearableFileInput):
         return files.get(name, None)
 
 class ItemForm(forms.ModelForm):
+    
     # Multiple file input for images
     images = forms.FileField(
-        widget=MultipleFileInput(),
+        #widget=forms.MultipleFileInput(attrs={"multiple": True, "accept": "image/*"}),
+        widget=forms.ClearableFileInput(attrs={'allow_multiple_selected': True}),
+        #widget=forms.ClearableFileInput(attrs={"multiple": True}),
+        #widget=forms.ClearableFileInput(attrs={"multiple": True, "accept": "image/*"}),
+        
         required=False,
         help_text="Upload up to 5 images"
     )
@@ -80,7 +86,8 @@ class ItemForm(forms.ModelForm):
             'name', 'category', 'description', 
             'price', 'is_price_negotiable', 
             'stock_quantity', 'condition', 
-            'delivery_option', 'location'
+            'delivery_option', 
+            #'location'
         ]
         widgets = {
             'description': forms.Textarea(attrs={
@@ -90,6 +97,10 @@ class ItemForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={
                 'step': '0.01',
                 'min': '0'
+            }),
+            'stock_quantity': forms.NumberInput(attrs={
+                'step': '1',
+                'min': '1'
             })
         }
 

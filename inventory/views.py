@@ -16,12 +16,14 @@ from .forms import (
     ProductSearchForm
 )
 
+
+
 @login_required
 def product_list(request):
     # Search and filter functionality
     #search_form = ProductSearchForm(request.GET)
     search_form = ItemSearchForm(request.GET)
-    products = Product.objects.filter(user=request.user)
+    products = Product.objects.filter(user=request.user).order_by('-created_at')
 
     if search_form.is_valid():
         # Apply filters based on form data
@@ -66,6 +68,8 @@ def product_detail(request, product_id):
         'stock_adjustments': stock_adjustments
     })
 
+
+'''
 @login_required
 def create_product(request):
     if request.method == 'POST':
@@ -81,6 +85,7 @@ def create_product(request):
         form = ProductForm()
     
     return render(request, 'inventory/create_product.html', {'form': form})
+    '''
 
 @login_required
 def edit_product(request, product_id):
@@ -91,7 +96,7 @@ def edit_product(request, product_id):
         if form.is_valid():
             form.save()
             messages.success(request, f"Product {product.name} updated successfully!")
-            return redirect('product_detail', product_id=product.id)
+            return redirect('inventory:product_detail', product_id=product.id)
     else:
         form = ProductForm(instance=product)
     
@@ -132,7 +137,7 @@ def adjust_stock(request, product_id):
             )
             
             messages.success(request, f"Stock for {product.name} adjusted successfully!")
-            return redirect('product_detail', product_id=product.id)
+            return redirect('inventory:product_detail', product_id=product.id)
     else:
         form = StockAdjustmentForm()
     
@@ -143,44 +148,58 @@ def adjust_stock(request, product_id):
 
 @login_required
 def add_item(request):
-    if request.method == 'POST':
+    if request.method == "POST":
+        print("FILES RECEIVED:", request.FILES)  # Debugging print
+
         form = ItemForm(request.POST, request.FILES, user=request.user)
-        
+
         if form.is_valid():
-            # Start a transaction to ensure data integrity
-            with transaction.atomic():
-                # Check if using a template
-                template_id = request.POST.get('use_template')
-                if template_id:
-                    template = ItemTemplate.objects.get(id=template_id)
-                    # Pre-fill item details from template
-                    form.instance.name = template.name
-                    form.instance.category = template.category
-                    form.instance.description = template.description
-                    form.instance.price = template.price
-                    form.instance.condition = template.condition
+            try:
+                with transaction.atomic():
+                    # Check if a template is used
+                    template_id = request.POST.get("use_template")
+                    if template_id:
+                        template = get_object_or_404(ItemTemplate, id=template_id)
+                        form.instance.name = template.name
+                        form.instance.category = template.category
+                        form.instance.description = template.description
+                        form.instance.price = template.price
+                        form.instance.stock_quantity = template.stock_quantity
+                        form.instance.condition = template.condition
 
-                # Save the item
-                item = form.save(commit=False)
-                item.user = request.user
-                item.status = 'pending'  # Require admin approval
-                item.save()
+                    # Save the item
+                    item = form.save(commit=False)
+                    item.user = request.user
+                    item.status = "pending"  # Require admin approval
+                    item.save()
 
-                # Handle image uploads
-                images = request.FILES.getlist('images')
-                if images:
-                    for index, image in enumerate(images):
-                        item_image = ItemImage(item=item, image=image)
-                        item_image.is_primary = (index == 0)  # Set the first image as primary
-                        item_image.save()
+                    # Handle image uploads using a loop
+                    images = request.FILES.getlist("images[]") 
+                    #images = request.FILES.getlist("images")  # Get multiple files
+                    print("Images Found:", images)  # Debugging print
+                    if images:
+                        for index, image in enumerate(images):
+                            item_image = ItemImage(item=item, image=image)
+                            item_image.is_primary = index == 0  # Mark first image as primary
+                            item_image.save()
+                        print("Images uploaded successfully.")
+                    else:
+                        print("No images uploaded.")
 
-                messages.success(request, 'Your item has been submitted for review!')
-                return redirect('item_list')  # Redirect to item list or dashboard
+                    messages.success(request, "Your item has been submitted for review!")
+                    return redirect("inventory:item_list")  # Redirect after success
+
+            except Exception as e:
+                messages.error(request, "Something went wrong. Please try again.")
+                print(f"Transaction Error: {str(e)}")  # Debugging print
+        else:
+            messages.error(request, "Please fix the errors in the form.")
+            print("Form Errors:", form.errors)  # Debugging print
 
     else:
         form = ItemForm(user=request.user)
 
-    return render(request, 'inventory/add_item.html', {'form': form})
+    return render(request, "inventory/add_item.html", {"form": form})
 
 @login_required
 def item_list(request):
@@ -201,7 +220,7 @@ def edit_item(request, item_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Item updated successfully!')
-            return redirect('item_detail', item_id=item.id)
+            return redirect('inventory:item_detail', item_id=item.id)
     else:
         form = ItemForm(instance=item, user=request.user)
 

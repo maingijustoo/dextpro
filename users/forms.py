@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from allauth.account.forms import SignupForm
 from .models import CustomUser, StudentVerification
+from django.contrib.auth.hashers import make_password
 
 
 class CustomSignupForm(SignupForm):
@@ -14,7 +15,11 @@ class CustomSignupForm(SignupForm):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.business_name = self.cleaned_data.get('business_name')
+                # Ensure the password is hashed
+        if not user.password.startswith("pbkdf2_sha256$"):
+            user.password = make_password(user.password)
         user.save()
+
         return user
     
 
