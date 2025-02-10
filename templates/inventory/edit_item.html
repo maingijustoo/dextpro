@@ -1,122 +1,157 @@
 {% extends 'inventory/base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
+{% load custom_filters %}
 
 {% block content %}
-<div class="container-custom">
-    <h2 class="mb-4">
-        <i class="fas fa-edit"></i> Edit Item
-    </h2>
-    
-    <form method="post" enctype="multipart/form-data">
+<div class="container-lg py-5">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'inventory:item_detail' item.id %}"class="btn btn-light btn-sm rounded-circle me-2">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="h3 mb-0">Edit Listing</h1>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
         {% csrf_token %}
         
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="fas fa-info-circle"></i> Basic Details
+        <div class="row g-4">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Details Card -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0"><i class="fas fa-info-circle text-primary me-2"></i>Item Details</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Item Name</label>
+                                {{ form.name|add_class:'form-control form-control-lg' }}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Category</label>
+                                {{ form.category|add_class:'form-select form-select-lg' }}
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Description</label>
+                                {{ form.description|add_class:'form-control' }}
+                                <small class="form-text text-muted">Be as detailed as possible for better responses</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Card -->
+                <div class="card border-0 shadow-sm mt-4">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0"><i class="fas fa-tag text-primary me-2"></i>Pricing</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    {{ form.price|add_class:'form-control form-control-lg' }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    {{ form.is_price_negotiable|add_class:'form-check-input' }}
+                                    <label class="form-check-label fw-bold">Negotiable Price</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <!-- Images Card -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0"><i class="fas fa-images text-primary me-2"></i>Photos</h2>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            {{ form.name.label_tag }}
-                            {{ form.name|add_class:'form-control' }}
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form.category.label_tag }}
-                                {{ form.category|add_class:'form-control' }}
-                                <div class="container-custom">
-                                    <h2 class="mb-4">
-                                        <i class="fas fa-edit"></i> Edit Item
-                                    </h2>
-                                    
-                                    <form method="post" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <div class="card mb-3">
-                                                    <div class="card-header">
-                                                        <i class="fas fa-info-circle"></i> Basic Details
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="mb-3">
-                                                            {{ form.name.label_tag }}
-                                                            {{ form.name|add_class:'form-control' }}
-                                                        </div>
-                                                        
-                                                        <div class="row">
-                                                            <div class="col-md-6 mb-3">
-                                                                {{ form.category.label_tag }}
-                                                                {{ form.category|add_class:'form-control' }}
-                                                            ```html
-                                                            </div>
-                                                            <div class="col-md-6 mb-3">
-                                                                {{ form.condition.label_tag }}
-                                                                {{ form.condition|add_class:'form-control' }}
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <div class="mb-3">
-                                                            {{ form.description.label_tag }}
-                                                            {{ form.description|add_class:'form-control' }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="card mb-3">
-                                                    <div class="card-header">
-                                                        <i class="fas fa-dollar-sign"></i> Pricing
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="col-md-6 mb-3">
-                                                                {{ form.price.label_tag }}
-                                                                {{ form.price|add_class:'form-control' }}
-                                                            </div>
-                                                            <div class="col-md-6 mb-3 d-flex align-items-end">
-                                                                <div class="form-check">
-                                                                    {{ form.is_price_negotiable }}
-                                                                    {{ form.is_price_negotiable.label_tag }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-md-4">
-                                                <div class="card mb-3">
-                                                    <div class="card-header">
-                                                        <i class="fas fa-images"></i> Item Images
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Upload New Images (Max 5)</label>
-                                                            <input type="file" name="images" multiple class="form-control" accept="image/*">
-                                                            <small class="text-muted">Tip: Clear images get more attention!</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <i class="fas fa-truck"></i> Delivery Options
-                                                    </div>
-                                                    <div class="card-body">
-                                                        {{ form.delivery_option|add_class:'form-control mb-3' }}
-                                                        {{ form.location|add_class:'form-control' }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="text-end mt-3">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-save"></i> Save Changes
-                                            </button>
-                                        </div>
-                                    </form>
+                            <label class="form-label fw-bold">Current Images</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for image in item.images.all %}
+                                <div class="position-relative">
+                                    <img src="{{ image.image.url }}" class="img-thumbnail" width="80" height="80">
+                                    <a href="{% url 'inventory:delete_image' image.id %}" 
+                                       class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle">
+                                        <i class="fas fa-times"></i>
+                                    </a>
                                 </div>
-                                {% endblock %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="border-top pt-3">
+                            <label class="form-label fw-bold">Add New Images</label>
+                            <input type="file" name="images" multiple 
+                                   class="form-control" 
+                                   accept="image/*"
+                                   data-max-files="5">
+                            <small class="text-muted">Max 5 images (JPEG or PNG)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Card -->
+                <div class="card border-0 shadow-sm mt-4">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0"><i class="fas fa-truck text-primary me-2"></i>Delivery Options</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Delivery Method</label>
+                            {{ form.delivery_option|add_class:'form-select' }}
+                        </div>
+                        <div>
+                            <label class="form-label fw-bold">Location</label>
+                            {{ form.location|add_class:'form-control' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex justify-content-between mt-4 border-top pt-4">
+            <a href="{% url 'inventory:item_detail' item.id %}" class="btn btn-outline-secondary px-4">
+                Cancel
+            </a>
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="fas fa-save me-2"></i>Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .form-control-lg {
+        border-radius: 0.75rem;
+    }
+    .card {
+        border-radius: 1rem;
+    }
+    .form-check-input {
+        width: 2.5em;
+        height: 1.25em;
+    }
+    .img-thumbnail {
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+
+

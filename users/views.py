@@ -6,7 +6,7 @@ from .models import CustomUser, StudentVerification
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, Sum, Q
 from django.shortcuts import render
-from inventory.models import Product
+from inventory.models import Item
 from orders.models import Order
 from payment.models import Payment
 from django.urls import reverse
@@ -35,7 +35,7 @@ def custom_login_view(request):
 def dashboard(request):
     # Fetch recent data for the dashboard
     recent_orders = Order.objects.filter(user=request.user).order_by('-order_date')[:5]
-    low_stock_products = Product.objects.filter(
+    low_stock_products = Item.objects.filter(
         user=request.user, 
         stock_quantity__lte=F('low_stock_threshold')
     )

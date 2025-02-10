@@ -1,13 +1,15 @@
 from django import forms
 from django.core.validators import MinValueValidator
-from .models import Product, ProductCategory
+#from .models import Product, ProductCategory
 from django.core.exceptions import ValidationError
 from .models import Item, ItemImage, ItemCategory, ItemTemplate
 from django.forms.widgets import ClearableFileInput
 
-class ProductForm(forms.ModelForm):
+
+        
+"""class ProductForm(forms.ModelForm):
     category = forms.ModelChoiceField(
-        queryset=ProductCategory.objects.all(), 
+        queryset=ItemCategory.objects.all(), 
         required=False
     )
     low_stock_threshold = forms.IntegerField(
@@ -20,9 +22,9 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = [
             'name', 'description', 'price', 'stock_quantity', 
-            'category', 'condition', 'low_stock_threshold'
-        ]
+            'category', 'condition', 'low_stock_threshold'"""
 
+'''
 class StockAdjustmentForm(forms.Form):
     adjustment_quantity = forms.IntegerField(
         help_text="Enter positive or negative value to adjust stock"
@@ -41,7 +43,8 @@ class ProductSearchForm(forms.Form):
         queryset=ProductCategory.objects.all(), 
         required=False
     )
-    in_stock = forms.BooleanField(required=False, label="Only Show In-Stock Products")
+    in_stock = forms.BooleanField(required=False, label="Only Show In-Stock Products")'''
+
 
 
 
@@ -143,4 +146,14 @@ class ItemSearchForm(forms.Form):
     condition = forms.ChoiceField(
         choices=[('', 'Any Condition')] + Item.CONDITION_CHOICES, 
         required=False
+    )
+
+class StockAdjustmentForm(forms.Form):
+    adjustment_quantity = forms.IntegerField(
+        help_text="Enter positive or negative value to adjust stock"
+    )
+    reason = forms.CharField(
+        widget=forms.Textarea, 
+        required=False, 
+        help_text="Optional: Reason for stock adjustment"
     )

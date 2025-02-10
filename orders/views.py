@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Order, OrderItem, OrderStatusUpdate
 from .forms import OrderForm, OrderSearchForm
-from inventory.models import Product
+from inventory.models import Item
 
 @login_required
 def order_list(request):
@@ -60,7 +60,7 @@ def create_order(request):
             
             if selected_products:
                 for product_id, quantity in selected_products.items():
-                    product = Product.objects.get(id=product_id)
+                    product = Item.objects.get(id=product_id)#item=products
                     total_amount += product.price * quantity
                     
                     # Create OrderItem
@@ -79,7 +79,7 @@ def create_order(request):
         form = OrderForm()
     
     # Get available products
-    available_products = Product.objects.filter(stock_quantity__gt=0)
+    available_products = product.objects.filter(stock_quantity__gt=0)
     
     return render(request, 'orders/create_order.html', {
         'form': form,
@@ -109,6 +109,6 @@ def update_order_status(request, order_id):
         
         # TODO: Implement email notification
         
-        return redirect('order_detail', order_id=order.id)
+        return redirect('order:order_detail', order_id=order.id)
     
     return render(request, 'orders/update_status.html', {'order': order})

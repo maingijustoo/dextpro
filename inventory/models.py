@@ -1,18 +1,24 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator
+from django.core.exceptions import ObjectDoesNotExist
 
-class ProductCategory(models.Model):
+class ItemCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     
     def __str__(self):
         return self.name
 
+def get_default_item():
+    try:
+        return Item.objects.first().id  # Use the first available Item
+    except (Item.DoesNotExist, ObjectDoesNotExist):
+        return None  # If no items exist, handle it manually
+'''
 class Product(models.Model):
     CONDITION_CHOICES = [
         ('new', 'New'),
@@ -39,42 +45,19 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-class StockAdjustment(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_adjustments')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    previous_quantity = models.IntegerField()
-    new_quantity = models.IntegerField()
-    adjustment_date = models.DateTimeField(auto_now_add=True)
-    reason = models.TextField(blank=True)
 
-    def __str__(self):
-        return f"{self.product.name} - Stock Adjustment"
-
-# Signal to handle low stock notifications
-@receiver(post_save, sender=Product)
-def check_low_stock(sender, instance, **kwargs):
-    """
-    Send email notification when product stock is low
-    """
-    if instance.is_low_stock():
-        # In a real-world scenario, you'd want to limit the frequency of these emails
-        send_mail(
-            'Low Stock Alert',
-            f'Product {instance.name} is running low on stock. Current quantity: {instance.stock_quantity}',
-            'from@dext.com',
-            ['admin@dext.com'],  # Replace with actual admin email
-            fail_silently=False,
-        )
+'''
 
 
 
 
-class ItemCategory(models.Model):
+'''class ItemCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
     icon = models.ImageField(upload_to='category_icons/', null=True, blank=True)
     
     def __str__(self):
-        return self.name
+        return self.name'''
+
 
 class Item(models.Model):
     CONDITION_CHOICES = [
@@ -123,7 +106,7 @@ class Item(models.Model):
     is_price_negotiable = models.BooleanField(default=False)
     
     # Inventory Management
-    stock_quantity = models.PositiveIntegerField(default=1)
+    stock_quantity = models.IntegerField(validators=[MinValueValidator(0)])
     
     # Additional Details
     condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default='new')
@@ -131,7 +114,7 @@ class Item(models.Model):
     
     # Location and Delivery ,,,,set the location for delivery in future
     #location = models.CharField(max_length=200, blank=True, null=True)
-    
+    low_stock_threshold = models.IntegerField(default=10, validators=[MinValueValidator(0)])
     # Status and Timestamps
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -139,6 +122,8 @@ class Item(models.Model):
 
     def __str__(self):
         return self.name
+    def is_low_stock(self):
+     return self.stock_quantity <= self.low_stock_threshold
 
 class ItemImage(models.Model):
     item = models.ForeignKey(Item, related_name='images', on_delete=models.CASCADE)
@@ -164,3 +149,31 @@ class ItemTemplate(models.Model):
 
     def __str__(self):
         return self.name
+    
+# Signal to handle low stock notifications
+
+@receiver(post_save, sender=Item)
+def check_low_stock(sender, instance, **kwargs):
+    """
+    Send email notification when product stock is low
+    """
+    if instance.is_low_stock():
+        # In a real-world scenario, you'd want to limit the frequency of these emails
+        send_mail(
+            'Low Stock Alert',
+            f'Item {instance.name} is running low on stock. Current quantity: {instance.stock_quantity}',
+            'from@dext.com',
+            ['admin@dext.com'],  # Replace with actual admin email
+            fail_silently=False,
+        )
+
+class StockAdjustment(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='stock_adjustments', default=get_default_item)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    previous_quantity = models.IntegerField()
+    new_quantity = models.IntegerField()
+    adjustment_date = models.DateTimeField(auto_now_add=True)
+    reason = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.item.name} - Stock Adjustment"

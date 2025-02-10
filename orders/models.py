@@ -1,8 +1,16 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from inventory.models import Product
+from inventory.models import Item
+from django.core.exceptions import ObjectDoesNotExist
 
+def get_default_item():
+    """Returns the first available Item or None if no items exist."""
+    try:
+        return Item.objects.first().id  # Get the first Item's ID
+    except (Item.DoesNotExist, ObjectDoesNotExist):
+        return None  # If no items exist, handle it manually
+    
 class DeliveryPreference(models.Model):
     DELIVERY_CHOICES = [
         ('standard', 'Standard Delivery'),
@@ -46,12 +54,12 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    Item = models.ForeignKey(Item, on_delete=models.CASCADE, default=get_default_item)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name}"
+        return f"{self.quantity} x {self.Item.name}"
 
 class OrderStatusUpdate(models.Model):
     order = models.ForeignKey(Order, related_name='status_updates', on_delete=models.CASCADE)

@@ -1,10 +1,10 @@
 from django import forms
 from django.utils import timezone
 from .models import Order, DeliveryPreference
-from inventory.models import Product
+from inventory.models import Item
 
 class OrderForm(forms.ModelForm):
-    products = forms.JSONField(required=False)
+    Item = forms.JSONField(required=False)
     delivery_preference = forms.ModelChoiceField(
         queryset=DeliveryPreference.objects.all(),
         required=True

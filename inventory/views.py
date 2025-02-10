@@ -8,14 +8,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
 from .models import Item, ItemImage, ItemTemplate
-from .forms import ItemForm, ItemTemplateForm, ItemSearchForm
-from .models import Product, StockAdjustment, ProductCategory
-from .forms import (
+from .forms import ItemForm, ItemTemplateForm, ItemSearchForm, StockAdjustmentForm 
+from .models import  StockAdjustment, ItemCategory
+'''from .forms import (
     ProductForm, 
     StockAdjustmentForm, 
     ProductSearchForm
 )
-
+'''
 
 
 @login_required
@@ -23,7 +23,7 @@ def product_list(request):
     # Search and filter functionality
     #search_form = ProductSearchForm(request.GET)
     search_form = ItemSearchForm(request.GET)
-    products = Product.objects.filter(user=request.user).order_by('-created_at')
+    products = Item.objects.filter(user=request.user).order_by('-created_at')
 
     if search_form.is_valid():
         # Apply filters based on form data
@@ -58,15 +58,6 @@ def product_list(request):
         'search_form': search_form
     })
 
-@login_required
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id, user=request.user)
-    stock_adjustments = StockAdjustment.objects.filter(product=product).order_by('-adjustment_date')
-    
-    return render(request, 'inventory/product_detail.html', {
-        'product': product,
-        'stock_adjustments': stock_adjustments
-    })
 
 
 '''
@@ -86,62 +77,62 @@ def create_product(request):
     
     return render(request, 'inventory/create_product.html', {'form': form})
     '''
-
-@login_required
+'''@login_required
 def edit_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id, user=request.user)
+    product = get_object_or_404(Item, id=product_id, user=request.user)
     
     if request.method == 'POST':
-        form = ProductForm(request.POST, instance=product)
+        form = ItemForm(request.POST, instance=product)
         if form.is_valid():
             form.save()
             messages.success(request, f"Product {product.name} updated successfully!")
             return redirect('inventory:product_detail', product_id=product.id)
     else:
-        form = ProductForm(instance=product)
+        form = ItemForm(instance=product)
     
-    return render(request, 'inventory/edit_product.html', {'form': form, 'product': product})
+    return render(request, 'inventory/edit_product.html', {'form': form, 'product': product})'''
+
 
 @login_required
-def delete_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id, user=request.user)
+def delete_product(request, item_id):
+    product = get_object_or_404(Item, id=item_id, user=request.user)
     if request.method == 'POST':
         product.delete()
         messages.success(request, f"Product {product.name} deleted successfully!")
-        return redirect('product_list')
+        return redirect('item_list')
     
     return render(request, 'inventory/delete_product.html', {'product': product})
 
 @login_required
-def adjust_stock(request, product_id):
-    product = get_object_or_404(Product, id=product_id, user=request.user)
+def adjust_stock(request, item_id):
+    Item = get_object_or_404(Item, id=item_id, user=request.user)
     
     if request.method == 'POST':
         form = StockAdjustmentForm(request.POST)
         if form.is_valid():
             adjustment_quantity = form.cleaned_data['adjustment_quantity']
-            previous_quantity = product.stock_quantity
+            previous_quantity = Item.stock_quantity
             new_quantity = previous_quantity + adjustment_quantity
             
             # Update product stock
-            product.stock_quantity = new_quantity
-            product.save()
+            Item.stock_quantity = new_quantity
+            Item.save()
             
             # Log stock adjustment
             StockAdjustment.objects.create(
-                product=product,
+                Item=Item,
                 user=request.user,
                 previous_quantity=previous_quantity,
                 new_quantity=new_quantity,
                 reason=form.cleaned_data['reason']
             )
             
-            messages.success(request, f"Stock for {product.name} adjusted successfully!")
-            return redirect('inventory:product_detail', product_id=product.id)
+            messages.success(request, f"Stock for {Item.name} adjusted successfully!")
+            return redirect('inventory:product_detail', item_id=item_id)
     else:
         form = StockAdjustmentForm()
     
-    return render(request, 'inventory/adjust_stock.html', {'form': form, 'product': product})
+    return render(request, 'inventory/adjust_stock.html', {'form': form, 'Item': Item})
 
 
 
@@ -209,7 +200,18 @@ def item_list(request):
 @login_required
 def item_detail(request, item_id):
     item = get_object_or_404(Item, id=item_id, user=request.user)
-    return render(request, 'inventory/item_detail.html', {'item': item})
+    stock_adjustments = StockAdjustment.objects.filter(item=item).order_by('-adjustment_date')
+    return render(request, 'inventory/item_detail.html', {'item': item, 'stock_adjustments': stock_adjustments},)
+'''@login_required
+def product_detail(request, product_id):
+    product = get_object_or_404(Item, id=product_id, user=request.user)
+    stock_adjustments = StockAdjustment.objects.filter(product=product).order_by('-adjustment_date')
+    
+    return render(request, 'inventory/product_detail.html', {
+        'product': product,
+        'stock_adjustments': stock_adjustments
+    })'''
+
 
 @login_required
 def edit_item(request, item_id):
@@ -225,6 +227,18 @@ def edit_item(request, item_id):
         form = ItemForm(instance=item, user=request.user)
 
     return render(request, 'inventory/edit_item.html', {'form': form, 'item': item})
+
+@login_required
+def delete_image(request, image_id):
+    image = get_object_or_404(ItemImage, id=image_id, item__user=request.user)
+    
+    # Delete the image
+    image.delete()
+    
+    messages.success(request, "Image deleted successfully!")
+    
+    return redirect('inventory:edit_item', item_id=image.item.id)  # Redirect back to editing the item
+
 
 # Admin view for reviewing items
 @login_required

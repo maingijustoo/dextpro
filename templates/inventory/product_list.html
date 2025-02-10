@@ -1,42 +1,87 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Your Products</h2>
-<form method="get" action="">
-    {{ search_form.as_p }}
-    <button type="submit">Search</button>
-</form>
-<table>
-    <tr>
-        <th>Product ID</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Stock Quantity</th>
-        <th>Actions</th>
-    </tr>
-    {% for product in page_obj %}
-    <tr>
-        <td>{{ product.id }}</td>
-        <td>{{ product.name }}</td>
-        <td>{{ product.price }}</td>
-        <td>{{ product.stock_quantity }}</td>
-        <td>
-            <a href="{% url 'inventory:product_detail' product.id %}">View</a>
-            <a href="{% url 'inventory:edit_product' product.id %}">Edit</a>
-            <a href="{% url 'inventory:delete_product' product.id %}">Delete</a>
-            <a href="{% url 'inventory:adjust_stock' product.id %}">Adjust Stock</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-<style>.floating-add-btn {
+<div class="container mt-4">
+    <h2 class="mb-3">Your Products</h2>
+
+    <!-- Search Form -->
+    <form method="get" action="" class="d-flex mb-3">
+        <input type="text" name="search" class="form-control me-2" placeholder="Search products..." value="{{ request.GET.search }}">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+    </form>
+
+    <!-- Product Table -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock Quantity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in page_obj %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>${{ product.price }}</td>
+                    <td>{{ product.stock_quantity }}</td>
+                    <td>
+                        <a href="{% url 'inventory:item_detail' product.id %}" class="btn btn-sm btn-info">View</a>
+                        <a href="{% url 'inventory:edit_item' product.id %}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{% url 'inventory:delete_product' product.id %}" class="btn btn-sm btn-danger">Delete</a>
+                        <a href="{% url 'inventory:adjust_stock' product.id %}" class="btn btn-sm btn-secondary">Adjust Stock</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No products found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Floating Add Button -->
+    <a href="{% url 'inventory:add_item' %}" class="floating-add-btn">
+        <i class="fas fa-plus fa-2x"></i>
+    </a>
+
+    <!-- Pagination -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1&{{ request.GET.urlencode }}">First</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">‹</a></li>
+            {% endif %}
+
+            {% for page in page_obj.paginator.page_range %}
+                <li class="page-item {% if page_obj.number == page %}active{% endif %}">
+                    <a class="page-link" href="?page={{ page }}&{{ request.GET.urlencode }}">{{ page }}</a>
+                </li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">›</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode }}">Last</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<!-- Styles for Floating Add Button -->
+<style>
+.floating-add-btn {
     position: fixed;
-    bottom: 80px;
+    bottom: 20px;
     right: 20px;
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-color: #4a90e2;
+    background-color: #0d6efd;
     color: white;
     border: none;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -45,21 +90,11 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    text-decoration: none;
 }
 .floating-add-btn:hover {
-    background-color: #357abd;
+    background-color: #0056b3;
     transform: scale(1.1);
-}</style>
-<a href="{% url 'inventory:add_item' %}" class="floating-add-btn">
-    <i class="fas fa-plus fa-2x"></i>
-</a>
-<div>
-    {% for page in page_obj.paginator.page_range %}
-        {% if page_obj.number == page %}
-            <strong>{{ page }}</strong>
-        {% else %}
-            <a href="?page={{ page }}&{{ request.GET.urlencode }}">{{ page }}</a>
-        {% endif %}
-    {% endfor %}
-</div>
+}
+</style>
 {% endblock %}
